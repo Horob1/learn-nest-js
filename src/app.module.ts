@@ -15,6 +15,8 @@ import { CloudinaryModule } from './cloudinary/cloudinary.module';
 import { FilesModule } from './files/files.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
+import { RolesModule } from './roles/roles.module';
+import { PermissionsModule } from './permissions/permissions.module';
 
 @Module({
   imports: [
@@ -50,6 +52,8 @@ import { join } from 'path';
     JobsModule,
     CloudinaryModule,
     FilesModule,
+    RolesModule,
+    PermissionsModule,
   ],
   controllers: [AppController],
   providers: [
