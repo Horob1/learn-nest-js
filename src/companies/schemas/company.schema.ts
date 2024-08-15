@@ -16,7 +16,7 @@ export class Company {
 
   @Prop({ required: true, type: Object })
   createdBy: {
-    _id: string;
+    _id: mongoose.Types.ObjectId;
     email: string;
   };
 
@@ -28,9 +28,12 @@ export class Company {
 
   @Prop({ type: Object })
   deletedBy: {
-    _id: string;
+    _id: mongoose.Types.ObjectId;
     email: string;
   };
+
+  @Prop()
+  logo: string;
 
   @Prop()
   createdAt: Date;

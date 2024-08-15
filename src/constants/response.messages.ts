@@ -27,3 +27,26 @@ export const AUTH_MESSAGE = {
   LOGOUT_SUCCESS: 'Log out successfully',
   GET_ACCOUNT_SUCCESS: 'Get account successfully',
 } as const;
+
+export const JOB_MESSAGE = {
+  CREATE_SUCCESS: 'Job created successfully',
+  UPDATE_SUCCESS: 'Job updated successfully',
+  DELETE_SUCCESS: 'Job deleted successfully',
+  GET_ALL_SUCCESS: 'Jobs retrieved successfully',
+  GET_ONE_SUCCESS: 'Job retrieved successfully',
+  JOB_NOT_FOUND: 'Job not found',
+} as const;
+
+export const UPLOAD_FILE_MESSAGE = {
+  UPLOAD_SUCCESS: 'File uploaded successfully',
+  FILE_NOT_FOUND: 'File not found',
+} as const;
+
+export const RESUME_MESSAGE = {
+  CREATE_SUCCESS: 'Resume created successfully',
+  UPDATE_SUCCESS: 'Resume updated successfully',
+  DELETE_SUCCESS: 'Resume deleted successfully',
+  GET_ALL_SUCCESS: 'Resumes retrieved successfully',
+  GET_ONE_SUCCESS: 'Resume retrieved successfully',
+  RESUME_NOT_FOUND: 'Resume not found',
+} as const;

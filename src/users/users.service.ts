@@ -98,7 +98,7 @@ export class UsersService {
   async findOne(id: string) {
     if (!mongoose.Types.ObjectId.isValid(id))
       throw new BadRequestException(MONGOOSE_MESSAGE.INVALID_ID);
-    const user = this.userModel.findById(id, {
+    const user = await this.userModel.findById(id, {
       password: false,
     });
     if (!user) throw new BadRequestException(USERS_MESSAGE.USER_NOT_FOUND);
@@ -129,7 +129,10 @@ export class UsersService {
 
     delete updatedUser.password;
 
-    return updatedUser;
+    return {
+      _id: updatedUser._id,
+      updatedAt: updatedUser.updatedAt,
+    };
   }
 
   async remove(id: string, user: IUser) {
@@ -145,12 +148,15 @@ export class UsersService {
     });
     if (!deletedUser)
       throw new BadRequestException(USERS_MESSAGE.USER_NOT_FOUND);
-    return;
+    return {
+      _id: deletedUser._id,
+      deletedAt: deletedUser.deletedAt,
+    };
   }
 
   async register(registerUserDto: RegisterUserDto) {
     const hashedPassword = this.hashPassword(registerUserDto.password);
-    const existedUser = await this.userModel.find({
+    const existedUser = await this.userModel.findOne({
       $or: [
         {
           email: registerUserDto.email,
@@ -160,6 +166,7 @@ export class UsersService {
         },
       ],
     });
+
     if (existedUser) {
       throw new BadRequestException(USERS_MESSAGE.USERNAME_OR_EMAIL_EXISTED);
     }

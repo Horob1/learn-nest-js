@@ -9,12 +9,22 @@ import { AuthModule } from './auth/auth.module';
 // import { JwtAuthGuard } from './auth/jwt-auth.guard';
 import { CompaniesModule } from './companies/companies.module';
 import { ENV } from './constants/env';
+import { ResumesModule } from './resumes/resumes.module';
+import { JobsModule } from './jobs/jobs.module';
+import { CloudinaryModule } from './cloudinary/cloudinary.module';
+import { FilesModule } from './files/files.module';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: ['.env.development.local'],
+    }),
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', 'public'),
+      serveStaticOptions: { index: false },
     }),
     MongooseModule.forRootAsync({
       imports: [ConfigModule],
@@ -36,6 +46,10 @@ import { ENV } from './constants/env';
     UsersModule,
     AuthModule,
     CompaniesModule,
+    ResumesModule,
+    JobsModule,
+    CloudinaryModule,
+    FilesModule,
   ],
   controllers: [AppController],
   providers: [

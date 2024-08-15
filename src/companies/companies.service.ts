@@ -18,14 +18,20 @@ export class CompaniesService {
     @InjectModel(Company.name)
     private companyModel: SoftDeleteModel<CompanyDocument>,
   ) {}
-  create(createCompanyDto: CreateCompanyDto, user: IUser) {
-    return this.companyModel.create({
+  async create(createCompanyDto: CreateCompanyDto, user: IUser) {
+    const createdCompany = await this.companyModel.create({
       ...createCompanyDto,
       createdBy: {
         _id: new mongoose.Types.ObjectId(user._id),
         email: user.email,
       },
     });
+
+    return {
+      _id: createdCompany._id,
+      createdAt: createdCompany.createdAt,
+      logo: createdCompany.logo,
+    };
   }
 
   async findAll(page: number, limit: number, qs: string) {
@@ -88,7 +94,11 @@ export class CompaniesService {
         lean: true,
       },
     );
-    return updatedCompany;
+    return {
+      _id: updatedCompany._id,
+      updatedAt: updatedCompany.updatedAt,
+      logo: updatedCompany.logo,
+    };
   }
 
   async remove(id: string, user: IUser) {
@@ -107,6 +117,9 @@ export class CompaniesService {
     );
     if (!deletedCompany)
       throw new BadRequestException(COMPANY_MESSAGE.COMPANY_NOT_FOUND);
-    return;
+    return {
+      _id: deletedCompany._id,
+      deletedAt: deletedCompany.deletedAt,
+    };
   }
 }

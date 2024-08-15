@@ -1,7 +1,20 @@
+import { Optional } from '@nestjs/common';
+import { IsString } from 'class-validator';
+
 export class UpdateCompanyDto {
-  name?: string;
+  @Optional()
+  @IsString()
+  name: string;
 
-  address?: string;
+  @IsString()
+  @Optional()
+  address: string;
 
-  description?: string;
+  @IsString()
+  @Optional()
+  description: string;
+
+  @IsString()
+  @Optional()
+  logo: string;
 }

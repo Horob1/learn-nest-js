@@ -12,7 +12,7 @@ import { CompaniesService } from './companies.service';
 import { CreateCompanyDto } from './dto/create-company.dto';
 import { UpdateCompanyDto } from './dto/update-company.dto';
 import { IUser } from 'src/users/users.interface';
-import { ResponseMessage, User } from 'src/decorators/customize';
+import { Public, ResponseMessage, User } from 'src/decorators/customize';
 import { COMPANY_MESSAGE } from 'src/constants/response.messages';
 
 @Controller('companies')
@@ -24,6 +24,7 @@ export class CompaniesController {
     return this.companiesService.create(createCompanyDto, user);
   }
 
+  @Public()
   @Get()
   @ResponseMessage(COMPANY_MESSAGE.GET_ALL_SUCCESS)
   findAll(
@@ -34,6 +35,7 @@ export class CompaniesController {
     return this.companiesService.findAll(+page, +limit, qs);
   }
 
+  @Public()
   @Get(':id')
   @ResponseMessage(COMPANY_MESSAGE.GET_ONE_SUCCESS)
   findOne(@Param('id') id: string) {

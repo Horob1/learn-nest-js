@@ -12,7 +12,7 @@ import {
 import mongoose from 'mongoose';
 import { GENDERS, ROLES } from 'src/constants/enums';
 
-class Company {
+export class Company {
   @IsNotEmpty()
   _id: mongoose.Types.ObjectId;
 
