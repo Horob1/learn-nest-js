@@ -11,7 +11,7 @@ class ResumeHistory {
   @Prop({ required: true })
   updatedAt: Date;
 
-  @Prop({ required: true, type: Object })
+  @Prop({ type: Object })
   updatedBy: {
     _id: mongoose.Types.ObjectId;
     email: string;

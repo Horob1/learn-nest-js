@@ -13,6 +13,7 @@ import {
   RefreshTokenSchema,
 } from './schemas/refresh-token.schema';
 import { ENV } from 'src/constants/env';
+import { Role, RoleSchema } from 'src/roles/schemas/role.schema';
 
 @Module({
   imports: [
@@ -32,6 +33,7 @@ import { ENV } from 'src/constants/env';
     }),
     MongooseModule.forFeature([
       { name: RefreshToken.name, schema: RefreshTokenSchema },
+      { name: Role.name, schema: RoleSchema },
     ]),
   ],
   providers: [AuthService, LocalStrategy, JwtStrategy],

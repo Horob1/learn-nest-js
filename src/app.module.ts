@@ -17,6 +17,8 @@ import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 import { RolesModule } from './roles/roles.module';
 import { PermissionsModule } from './permissions/permissions.module';
+import { DatabasesModule } from './databases/databases.module';
+import { SubscribersModule } from './subscribers/subscribers.module';
 
 @Module({
   imports: [
@@ -54,6 +56,8 @@ import { PermissionsModule } from './permissions/permissions.module';
     FilesModule,
     RolesModule,
     PermissionsModule,
+    DatabasesModule,
+    SubscribersModule,
   ],
   controllers: [AppController],
   providers: [

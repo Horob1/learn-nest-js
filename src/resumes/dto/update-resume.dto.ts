@@ -1,10 +1,9 @@
-import { Optional } from '@nestjs/common';
-import { IsEnum } from 'class-validator';
+import { IsEnum, IsOptional } from 'class-validator';
 
 import { RESUME_STATUS } from 'src/constants/enums';
 
 export class UpdateResumeDto {
-  @Optional()
+  @IsOptional()
   @IsEnum(RESUME_STATUS)
   status: string;
 }

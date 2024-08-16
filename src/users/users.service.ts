@@ -2,25 +2,32 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User, UserDocument } from './schemas/user.schema';
 import { InjectModel } from '@nestjs/mongoose';
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { genSaltSync, hashSync, compareSync } from 'bcryptjs';
 import { SoftDeleteModel } from 'mongoose-delete';
 import mongoose, { Promise } from 'mongoose';
 import aqp from 'api-query-params';
 import { IUser } from './users.interface';
 import { RegisterUserDto } from './dto/register-user.dto';
-import { ROLES } from 'src/constants/enums';
 import {
   MONGOOSE_MESSAGE,
+  PERMISSION_MESSAGE,
   USERS_MESSAGE,
 } from 'src/constants/response.messages';
+import { Role, RoleDocument } from 'src/roles/schemas/role.schema';
+import { ADMIN_ROLE, USER_ROLE } from 'src/databases/sample';
 
 @Injectable()
 export class UsersService {
   constructor(
     @InjectModel(User.name) private userModel: SoftDeleteModel<UserDocument>,
+    @InjectModel(Role.name) private roleModel: SoftDeleteModel<RoleDocument>,
   ) {}
-  private hashPassword(password: string): string {
+  hashPassword(password: string): string {
     const salt = genSaltSync(10);
     return hashSync(password, salt);
   }
@@ -45,6 +52,7 @@ export class UsersService {
     const newUser = await this.userModel.create({
       ...createUserDto,
       password: hashedPassword,
+      role: new mongoose.Types.ObjectId(createUserDto.role),
       bio: '',
       avatar: '',
       createdBy: {
@@ -98,15 +106,17 @@ export class UsersService {
   async findOne(id: string) {
     if (!mongoose.Types.ObjectId.isValid(id))
       throw new BadRequestException(MONGOOSE_MESSAGE.INVALID_ID);
-    const user = await this.userModel.findById(id, {
-      password: false,
-    });
+    const user = await this.userModel
+      .findById(id, {
+        password: false,
+      })
+      .populate({ path: 'role', select: { _id: 1, name: 1 } });
     if (!user) throw new BadRequestException(USERS_MESSAGE.USER_NOT_FOUND);
     return user;
   }
 
-  async findByEmail(email: string) {
-    return await this.userModel.findOne({ email: email });
+  findByEmail(email: string) {
+    return this.userModel.findOne({ email: email });
   }
 
   async update(id: string, updateUserDto: UpdateUserDto, user: IUser) {
@@ -138,19 +148,28 @@ export class UsersService {
   async remove(id: string, user: IUser) {
     if (!mongoose.Types.ObjectId.isValid(id))
       throw new BadRequestException(MONGOOSE_MESSAGE.INVALID_ID);
-    const deletedUser = await this.userModel.findByIdAndUpdate(id, {
+    const deletedUser = await this.userModel.findById(id).populate({
+      path: 'role',
+      select: {
+        name: 1,
+      },
+    });
+    if (!deletedUser)
+      throw new BadRequestException(USERS_MESSAGE.USER_NOT_FOUND);
+    if ((deletedUser.role as any).name === ADMIN_ROLE)
+      throw new BadRequestException(PERMISSION_MESSAGE.PERMISSION_DENY);
+    const date = new Date();
+    await this.userModel.findByIdAndUpdate(id, {
       deletedBy: {
         _id: new mongoose.Types.ObjectId(user._id),
         email: user.email,
       },
       deleted: true,
-      deletedAt: new Date(),
+      deletedAt: date,
     });
-    if (!deletedUser)
-      throw new BadRequestException(USERS_MESSAGE.USER_NOT_FOUND);
     return {
       _id: deletedUser._id,
-      deletedAt: deletedUser.deletedAt,
+      deletedAt: date,
     };
   }
 
@@ -170,12 +189,21 @@ export class UsersService {
     if (existedUser) {
       throw new BadRequestException(USERS_MESSAGE.USERNAME_OR_EMAIL_EXISTED);
     }
+
+    const role = await this.roleModel.findOne({ name: USER_ROLE });
+
+    if (!role) {
+      throw new InternalServerErrorException(
+        MONGOOSE_MESSAGE.CANNOT_FIND_ROLE_USER,
+      );
+    }
+
     const newUser = await this.userModel.create({
       ...registerUserDto,
       password: hashedPassword,
       bio: '',
       avatar: '',
-      role: ROLES.USER,
+      role: role._id,
     });
 
     return { _id: newUser._id, createdAt: newUser.createdAt };

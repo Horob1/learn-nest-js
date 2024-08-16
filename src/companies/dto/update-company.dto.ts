@@ -1,20 +1,19 @@
-import { Optional } from '@nestjs/common';
-import { IsString } from 'class-validator';
+import { IsOptional, IsString } from 'class-validator';
 
 export class UpdateCompanyDto {
-  @Optional()
+  @IsOptional()
   @IsString()
   name: string;
 
   @IsString()
-  @Optional()
+  @IsOptional()
   address: string;
 
   @IsString()
-  @Optional()
+  @IsOptional()
   description: string;
 
   @IsString()
-  @Optional()
+  @IsOptional()
   logo: string;
 }

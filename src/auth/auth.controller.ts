@@ -23,7 +23,7 @@ export class AuthController {
   @UseGuards(LocalAuthGuard)
   @ResponseMessage(AUTH_MESSAGE.LOGIN_SUCCESS)
   @Post('login')
-  async login(@Request() req, @Res({ passthrough: true }) res: Response) {
+  login(@Request() req, @Res({ passthrough: true }) res: Response) {
     return this.authService.login(req.user, res);
   }
 
@@ -47,14 +47,7 @@ export class AuthController {
   @Get('account')
   @ResponseMessage(AUTH_MESSAGE.GET_ACCOUNT_SUCCESS)
   account(@User() user: IUser) {
-    return {
-      user: {
-        _id: user._id,
-        name: user.name,
-        email: user.email,
-        role: user.role,
-      },
-    };
+    return this.authService.account(user);
   }
 
   @Post('logout')

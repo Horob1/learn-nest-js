@@ -1,6 +1,5 @@
 import { PartialType } from '@nestjs/mapped-types';
 import { CreateJobDto } from './create-job.dto';
-import { Optional } from '@nestjs/common';
 import {
   ArrayMinSize,
   IsArray,
@@ -9,6 +8,7 @@ import {
   IsEnum,
   IsNumber,
   IsObject,
+  IsOptional,
   IsString,
   ValidateNested,
 } from 'class-validator';
@@ -18,52 +18,52 @@ import { JOB_LEVEL } from 'src/constants/enums';
 
 export class UpdateJobDto extends PartialType(CreateJobDto) {
   @IsString()
-  @Optional()
+  @IsOptional()
   name: string;
 
-  @Optional()
+  @IsOptional()
   @IsArray()
   @IsString({ each: true }) // "each" tells class-validator to run the validation on each item of the array
   @ArrayMinSize(1)
   skills: string[];
 
-  @Optional()
+  @IsOptional()
   @IsObject()
   @ValidateNested()
   @Type(() => Company)
   company: Company;
 
   @IsString()
-  @Optional()
+  @IsOptional()
   location: string;
 
   @IsNumber()
-  @Optional()
+  @IsOptional()
   salary: number;
 
   @IsNumber()
-  @Optional()
+  @IsOptional()
   quantity: number;
 
-  @Optional()
+  @IsOptional()
   @IsEnum(JOB_LEVEL)
   level: string;
 
   @IsString()
-  @Optional()
+  @IsOptional()
   description: string;
 
-  @Optional()
+  @IsOptional()
   @Transform(({ value }) => new Date(value))
   @IsDate()
   startDate: Date;
 
-  @Optional()
+  @IsOptional()
   @Transform(({ value }) => new Date(value))
   @IsDate()
   endDate: Date;
 
-  @Optional()
+  @IsOptional()
   @IsBoolean()
   isActive: boolean;
 }

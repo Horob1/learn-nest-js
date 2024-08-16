@@ -154,7 +154,19 @@ export class ResumesService {
   }
 
   async getMyResume(user: IUser) {
-    const resumes = await this.resumeModel.find({ user: user._id });
+    const resumes = await this.resumeModel
+      .find({ user: user._id })
+      .sort('-createdAt')
+      .populate([
+        {
+          path: 'companyId',
+          select: { name: 1 },
+        },
+        {
+          path: 'jobId',
+          select: { name: 1 },
+        },
+      ]);
     return resumes;
   }
 }

@@ -1,6 +1,7 @@
 import { Type } from 'class-transformer';
 import {
   IsEnum,
+  IsMongoId,
   IsNotEmpty,
   IsNumber,
   IsObject,
@@ -8,43 +9,46 @@ import {
   IsString,
   ValidateNested,
 } from 'class-validator';
-import mongoose from 'mongoose';
-import { GENDERS, ROLES } from 'src/constants/enums';
+import { GENDERS } from 'src/constants/enums';
 
 class Company {
-  _id: mongoose.Types.ObjectId;
+  @IsMongoId()
+  @IsNotEmpty()
+  _id: string;
 
+  @IsString()
+  @IsNotEmpty()
   name: string;
 }
 
 export class UpdateUserDto {
   @IsOptional()
   @IsString()
-  name?: string;
+  name: string;
 
   @IsOptional()
   @IsNumber()
-  age?: number;
+  age: number;
 
   @IsOptional()
   @IsString()
-  bio?: string;
+  bio: string;
 
   @IsOptional()
   @IsString()
-  avatar?: string;
+  avatar: string;
 
   @IsOptional()
   @IsObject()
   @ValidateNested()
   @Type(() => Company)
-  company?: Company;
+  company: Company;
 
   @IsOptional()
   @IsEnum(GENDERS)
-  gender?: string;
+  gender: string;
 
   @IsOptional()
-  @IsEnum(ROLES)
-  role?: string;
+  @IsMongoId()
+  role: string;
 }

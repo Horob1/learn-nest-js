@@ -1,13 +1,12 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { IsEnum } from 'class-validator';
 import mongoose, { HydratedDocument } from 'mongoose';
-import { GENDERS, ROLES } from 'src/constants/enums';
+import { GENDERS } from 'src/constants/enums';
 
 export type UserDocument = HydratedDocument<User>;
 
 @Schema({ timestamps: true })
 export class User {
-  @Prop({ required: true, unique: true })
+  @Prop()
   username: string;
 
   @Prop({ required: true, unique: true })
@@ -23,12 +22,10 @@ export class User {
   age: number;
 
   @Prop({ type: String, enum: GENDERS, required: true })
-  @IsEnum(GENDERS)
   gender: string;
 
-  @Prop({ type: String, enum: ROLES, required: true })
-  @IsEnum(ROLES)
-  role: string;
+  @Prop({ type: mongoose.Types.ObjectId, ref: 'Role', required: true })
+  role: mongoose.Types.ObjectId;
 
   @Prop({ type: Object })
   company: {

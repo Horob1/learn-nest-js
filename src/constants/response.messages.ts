@@ -8,7 +8,10 @@ export const USERS_MESSAGE = {
   USER_NOT_FOUND: 'User not found',
 } as const;
 
-export const MONGOOSE_MESSAGE = { INVALID_ID: 'Invalid id' } as const;
+export const MONGOOSE_MESSAGE = {
+  INVALID_ID: 'Invalid id',
+  CANNOT_FIND_ROLE_USER: 'Can not find default role USER in database',
+} as const;
 
 export const COMPANY_MESSAGE = {
   CREATE_SUCCESS: 'Company created successfully',
@@ -49,4 +52,23 @@ export const RESUME_MESSAGE = {
   GET_ALL_SUCCESS: 'Resumes retrieved successfully',
   GET_ONE_SUCCESS: 'Resume retrieved successfully',
   RESUME_NOT_FOUND: 'Resume not found',
+} as const;
+
+export const ROLE_MESSAGE = {
+  CREATE_SUCCESS: 'Role created successfully',
+  UPDATE_SUCCESS: 'Role updated successfully',
+  DELETE_SUCCESS: 'Role deleted successfully',
+  GET_ALL_SUCCESS: 'Roles retrieved successfully',
+  GET_ONE_SUCCESS: 'Role retrieved successfully',
+  ROLE_NOT_FOUND: 'Role not found',
+} as const;
+
+export const PERMISSION_MESSAGE = {
+  CREATE_SUCCESS: 'Permission created successfully',
+  UPDATE_SUCCESS: 'Permission updated successfully',
+  DELETE_SUCCESS: 'Permission deleted successfully',
+  GET_ALL_SUCCESS: 'Permissions retrieved successfully',
+  GET_ONE_SUCCESS: 'Permission retrieved successfully',
+  PERMISSION_NOT_FOUND: 'Permission not found',
+  PERMISSION_DENY: 'Permission denied',
 } as const;

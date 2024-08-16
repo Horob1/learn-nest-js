@@ -1,8 +1,3 @@
-export enum ROLES {
-  USER = 'USER',
-  ADMIN = 'ADMIN',
-}
-
 export enum GENDERS {
   MALE = 'MALE',
   FEMALE = 'FEMALE',
@@ -22,4 +17,13 @@ export enum RESUME_STATUS {
   REVIEWING = 'REVIEWING',
   APPROVED = 'APPROVED',
   REJECTED = 'REJECTED',
+}
+
+export enum API_METHOD {
+  GET = 'GET',
+  POST = 'POST',
+  PUT = 'PUT',
+  DELETE = 'DELETE',
+  PATCH = 'PATCH',
+  HEAD = 'HEAD',
 }

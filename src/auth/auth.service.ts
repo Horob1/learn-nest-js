@@ -11,6 +11,8 @@ import mongoose, { Model } from 'mongoose';
 import { RefreshToken } from './schemas/refresh-token.schema';
 import { Request, Response } from 'express';
 import { AUTH_MESSAGE } from 'src/constants/response.messages';
+import { Role, RoleDocument } from 'src/roles/schemas/role.schema';
+import { SoftDeleteModel } from 'mongoose-delete';
 
 @Injectable()
 export class AuthService {
@@ -20,6 +22,7 @@ export class AuthService {
     private jwtService: JwtService,
     @InjectModel(RefreshToken.name)
     private refreshModel: Model<RefreshToken>,
+    @InjectModel(Role.name) private roleModel: SoftDeleteModel<RoleDocument>,
   ) {}
   private async signRefreshToken(
     userInfo: IUser,
@@ -62,12 +65,19 @@ export class AuthService {
   }
   async login(user: IUser, res: Response) {
     const { _id, name, email, role } = user;
+
+    const roleDetails = await this.roleModel.findById(role).populate({
+      path: 'permissions',
+      select: { _id: 1, name: 1, apiPath: 1, module: 1, method: 1 },
+    });
+
     const payload = {
       _id,
       name,
       email,
       role,
     };
+
     const [access_token, refresh_token] = await Promise.all([
       this.signAccessToken(payload),
       this.signRefreshToken(payload),
@@ -87,13 +97,20 @@ export class AuthService {
 
     res.cookie('refresh_token', refresh_token, {
       httpOnly: true,
+      sameSite: 'lax',
       secure: true,
-      expires: new Date(verifiedRTPayload.exp * 1000), // 30 days
+      expires: new Date(verifiedRTPayload.exp * 1000),
     });
 
     return {
       access_token: access_token,
-      user: { _id, name, email, role },
+      user: {
+        _id,
+        name,
+        email,
+        role: { _id: role, name: roleDetails.name },
+        permissions: roleDetails.permissions,
+      },
     };
   }
   register(registerUserDto: RegisterUserDto) {
@@ -107,18 +124,24 @@ export class AuthService {
     const existToken = await this.refreshModel.findOne({
       token: oldRefreshToken,
     });
+
     if (!existToken)
       throw new UnauthorizedException(AUTH_MESSAGE.INVALID_TOKEN);
 
     //get user info
     const user = await this.usersService.findOne(existToken.userId.toString());
     const { _id, name, email, role } = user;
-    const payload: IUser = {
+    const payload = {
       _id: _id.toString(),
       name: name,
       email: email,
-      role: role,
+      role: role.toString(),
     };
+
+    const roleDetails = await this.roleModel.findById(role).populate({
+      path: 'permissions',
+      select: { _id: 1, name: 1, apiPath: 1, module: 1, method: 1 },
+    });
 
     //sign new access token and refresh token
 
@@ -145,13 +168,37 @@ export class AuthService {
 
     res.cookie('refresh_token', refresh_token, {
       expires: new Date(existToken.exp),
-      httpOnly: true,
+      sameSite: 'lax',
       secure: true,
+      httpOnly: true,
     });
 
     return {
       access_token: access_token,
-      user: { _id, name, email, role },
+      user: {
+        _id,
+        name,
+        email,
+        role: { _id: role, name: roleDetails.name },
+        permissions: roleDetails.permissions,
+      },
+    };
+  }
+
+  async account(user: IUser) {
+    const { _id, name, email, role } = user;
+    const roleDetails = await this.roleModel.findById(role).populate({
+      path: 'permissions',
+      select: { _id: 1, name: 1, apiPath: 1, module: 1, method: 1 },
+    });
+    return {
+      user: {
+        _id,
+        name,
+        email,
+        role: { _id: role, name: roleDetails.name },
+        permissions: roleDetails.permissions,
+      },
     };
   }
 }

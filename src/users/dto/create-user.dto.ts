@@ -2,6 +2,7 @@ import { Type } from 'class-transformer';
 import {
   IsEmail,
   IsEnum,
+  IsMongoId,
   IsNotEmpty,
   IsNotEmptyObject,
   IsNumber,
@@ -10,7 +11,7 @@ import {
   ValidateNested,
 } from 'class-validator';
 import mongoose from 'mongoose';
-import { GENDERS, ROLES } from 'src/constants/enums';
+import { GENDERS } from 'src/constants/enums';
 
 export class Company {
   @IsNotEmpty()
@@ -46,7 +47,7 @@ export class CreateUserDto {
   gender: string;
 
   @IsNotEmpty()
-  @IsEnum(ROLES)
+  @IsMongoId()
   role: string;
 
   @IsNotEmptyObject()
